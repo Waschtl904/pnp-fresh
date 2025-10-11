@@ -10,6 +10,7 @@ scope = "leanprover-community"
 [[lean_lib]]
 name = "pnpLib"
 srcDir = "src"
+roots = ["PNP", "Arith"]
 
 [[lean_exe]]
 name = "pnpExe"
