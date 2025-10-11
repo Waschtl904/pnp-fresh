@@ -1,0 +1,13 @@
+# Lake- und Lean-Build-Dateien
+.lake/
+lake-manifest.json
+
+# Elan-Toolchain-Ordner
+.elan/
+
+# VS Code Einstellungen
+.vscode/
+
+# Betriebssystem-Dateien
+Thumbs.db
+.DS_Store

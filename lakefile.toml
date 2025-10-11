@@ -1,0 +1,17 @@
+
+name = "pnp"
+version = "0.1.0"
+defaultTargets = ["pnpExe"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "pnpLib"
+srcDir = "src"
+
+[[lean_exe]]
+name = "pnpExe"
+root = "Main"
+srcDir = "src"
