@@ -5,6 +5,6 @@ namespace PNP
 
 /-- DetSolve(f, x, t) : deterministische Entscheidung ≤ t Schritte -/
 def DetSolve (f x t : Nat) : Prop :=
-  TM.AcceptRun f x [] t
+  PNP.TM.AcceptRun f x [] t
 
 end PNP
