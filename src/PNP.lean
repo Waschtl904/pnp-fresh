@@ -1,6 +1,3 @@
-import Mathlib.Data.Nat.Basic  -- mathlib⁴-Grundlagen
-import Mathlib.Data.Nat.Sqrt   --
-
 namespace PNP
 
 /-- Paarungsfunktion: ⟨u,v⟩ = 2^u * (2*v + 1) - 1 -/
@@ -24,6 +21,16 @@ def snd (z : Nat) : Nat :=
   let u := fst z
   ((z + 1) / (2 ^ u) - 1) / 2
 
+theorem pair_fst_snd (u v : Nat) : fst (pair u v) = u := by
+  dsimp [pair, fst, log2]
+  -- For now, admit this proof
+  sorry
+
+theorem pair_snd_fst (u v : Nat) : snd (pair u v) = v := by
+  dsimp [pair, snd, fst, log2]
+  -- For now, admit this proof
+  sorry
+
 namespace TM
 
 /-- Konfiguration einer Turing-Maschine -/
@@ -38,16 +45,3 @@ def AcceptRun (e w : Nat) (seq : List Nat) (s : Nat) : Prop :=
 end TM
 
 end PNP
-
-def main : IO Unit := do
-  -- Test PNP functions
-  let p := PNP.pair 3 5
-  IO.println s!"Pair of 3 and 5 is {p}"
-  let f := PNP.fst p
-  let s := PNP.snd p
-  IO.println s!"First: {f}, Second: {s}"
-
-  -- Test TM functions
-  let config : PNP.TM.Config 1 2 [1, 2, 3] 5 := { valid := trivial, steps_le := by rfl }
-  IO.println "Config created successfully"
-  IO.println "Hello, PNP!"
