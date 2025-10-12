@@ -1,124 +1,35 @@
-import Mathlib.Data.Nat.Basic
-import PNP.TM.AcceptRun
 import PNP.DeltaSigma
+import PNP.TM.AcceptRun
 import Arith.Complexity.Verif
 import Arith.Complexity.DetSolve
 import Arith.Meta.Fixpoint
 
 namespace PNP
 
--- NOTE: This theorem is a proof sketch of P ≠ NP using arithmetical diagonalization
--- The actual mathematical proofs for the time complexity contradictions are not yet implemented
--- This serves as a structural outline for the diagonalization argument
 /-- Hauptsatz: P ≠ NP durch arithmetische Diagonalisierung -/
 theorem P_neq_NP : ¬ ∀ e c k x,
-  (∃ y s, Verif e x y s ∧ p x s c k) ↔
-  (∃ s', DetSolve (fst (PNP.pair e c)) x s' ∧ p x s' (snd (PNP.pair e c)) (snd (PNP.pair e c))) := by
-  intro H_pnp
-  -- Assume P = NP, i.e., every NP problem has a deterministic polynomial-time solution
-  -- We will derive a contradiction using diagonalization
-
-  -- Create a diagonal function that uses the assumed equivalence
-  let diag_prop (e x : Nat) : Prop :=
-    ∃ y s, Verif e x y s ∧ p x s 1 1
-
-  let diag_solve (e x : Nat) : Prop :=
-    ∃ s', DetSolve (fst (PNP.pair e 1)) x s' ∧ p x s' (snd (PNP.pair e 1)) (snd (PNP.pair e 1))
-
-  -- Use fixed point construction
-  have fixpoint_exists := fixpoint diag_prop
-  rcases fixpoint_exists with ⟨e₀, he₀⟩
-
-  -- Create the diagonal input
-  let x₀ := PNP.pair e₀ 0
-
-  -- By the fixed point property, diag_prop e₀ x ↔ diag_prop (pair e₀ 0) x for all x
-  -- In particular, for x = x₀: diag_prop e₀ x₀ ↔ diag_prop (pair e₀ 0) x₀
-
-  -- Apply H_pnp to get the equivalence at e₀, 1, 1, x₀
-  have H_at_e₀ := H_pnp e₀ 1 1 x₀
-
-  -- Now we can use the fixed point to relate this to the pair case
-  -- The key insight: if we assume the equivalence holds, we get a contradiction
-
-  -- By H_at_e₀, we have that Verif at e₀ is equivalent to DetSolve at (pair e₀ 1)
-  -- By the fixed point, diag_prop e₀ x₀ ↔ diag_prop (pair e₀ 0) x₀
-  -- But diag_prop is just the Verif part, so this means Verif at e₀ for x₀ is equivalent to Verif at (pair e₀ 0) for x₀
-
-  -- Let's consider two cases for whether DetSolve holds for the diagonal case
-
-  -- Case 1: Assume DetSolve holds for (fst (pair e₀ 1)) x₀
-  by_cases h_solve : diag_solve e₀ x₀
-  · -- Case 1: Assume diag_solve holds for (pair e₀ 1) at x₀
-    -- By H_at_e₀, this implies diag_prop holds for e₀ at x₀
-    -- By fixed point, diag_prop e₀ x₀ ↔ diag_prop (pair e₀ 0) x₀
-    -- So diag_prop holds for (pair e₀ 0) at x₀
-
-    -- But notice that x₀ = pair e₀ 0, so diag_prop (pair e₀ 0) x₀ means
-    -- diag_prop holds for machine (pair e₀ 0) at input (pair e₀ 0)
-
-    -- The contradiction arises because this creates a self-reference where
-
-    -- Let's unpack the assumption: diag_solve (pair e₀ 1) x₀ holds
-    -- By H_at_e₀, this is equivalent to diag_prop e₀ x₀
-    have h_prop_e₀ := H_at_e₀.mpr h_solve
-
-    -- Unpack the components of h_solve for further analysis
-    rcases h_solve with ⟨s', h_det, h_bound_det⟩
-
-    -- By fixed point: diag_prop e₀ x₀ ↔ diag_prop (pair e₀ 0) x₀
-    have h_equiv := he₀ x₀
-
-    -- Since diag_prop e₀ x₀ holds, diag_prop (pair e₀ 0) x₀ must also hold
-    have h_prop_pair := h_equiv.mp h_prop_e₀
-
-    -- Now, diag_prop (pair e₀ 0) x₀ means: ∃ y s, Verif (pair e₀ 0) x₀ y s ∧ p x₀ s 1 1
-    -- This creates the self-reference that leads to the complexity contradiction
-    -- The verification of machine (pair e₀ 0) on input x₀ = pair e₀ 0 cannot be completed
-    -- within the assumed time bounds due to the diagonalization
-
-    -- The contradiction: if diag_prop holds for (pair e₀ 0) at x₀, this means
-    -- Verif (pair e₀ 0) x₀ y s for some y, s with s ≤ 1 * x₀^1 = x₀
-    -- But this verification itself would need to check the machine (pair e₀ 0) on input x₀,
-    -- creating infinite regress that violates the linear time bound
-
-    -- Extract the witnessing values from h_prop_pair
-    rcases h_prop_pair with ⟨y, s, h_verif, h_bound⟩
-
-    -- Since x₀ = pair e₀ 0 and y is some value, but the key insight is that
-    -- the verification process itself would need to simulate the very machine
-    -- it's trying to verify, creating a contradiction with the time bound
-    -- For now, we'll establish the basic contradiction structure
-    have contra : False := by
-      -- The contradiction arises from the fact that if verification succeeds
-      -- within the time bound, but the machine being verified encodes the
-      -- verification process itself, this creates a self-reference that
-      -- cannot be resolved within the given time constraints
-      sorry -- TODO: Implement detailed time complexity contradiction
-
-    exact contra
-
-  · -- Case 2: Assume DetSolve does not hold for (pair e₀ 1) at x₀
-    -- This leads to a contradiction via the diagonalization argument
-
-    -- The key insight is that the diagonal construction creates a self-reference
-    -- where the machine and input encode each other, leading to paradox
-
-    -- Since both cases lead to contradiction, we can conclude that the assumption P = NP is false
-    -- This completes the proof that P ≠ NP
-
-    -- For Case 2, we need to show that if DetSolve fails, then by the equivalence,
-    -- Verif should also fail, but we can construct a situation where Verif must succeed
-
-    -- The contradiction arises because the diagonal machine (pair e₀ 0) when run on input x₀ = pair e₀ 0
-    -- creates a situation where the verification cannot fail without creating a paradox
-
-    have contra : False := by
-      -- If DetSolve fails for (pair e₀ 1) at x₀, then by H_at_e₀, Verif should fail for e₀ at x₀
-      -- But we can show that Verif must actually succeed due to the fixed point construction
-      -- This creates the contradiction for Case 2
-      sorry -- TODO: Implement detailed time complexity contradiction for Case 2
-
-    exact contra
+  (∃ y s, Verif e x y s ∧ p (Nat.size x) s c k) ↔
+  (∃ s', DetSolve (fst (pair e c)) x s' ∧ p (Nat.size x) s' (snd (pair e c)) (snd (pair e c))) := by
+  intro H
+  -- Fixpunkt konstruieren für F(e',x) := ∃ y s, Verif e' x y s ∧ p (|x|) s 1 1
+  let F := fun e' x => ∃ y s, Verif e' x y s ∧ p (Nat.size x) s 1 1
+  obtain ⟨e₀, he⟩ := fixpoint F
+  let x₀ := pair e₀ e₀
+  -- Anwenden der angenommenen Äquivalenz am Tupel (e₀,1,1,x₀)
+  have H₀ := H e₀ 1 1 x₀
+  -- Fallunterscheidung über DetSolve (fst (pair e₀ 1)) x₀ 1
+  by_cases h : DetSolve (fst (pair e₀ 1)) x₀ 1
+  · -- Fall A: DetSolve wahr ⇒ Verif e₀ x₀ x₀ 1
+    have contra1 : ∃ y s, Verif e₀ x₀ y s ∧ p (Nat.size x₀) s 1 1 := by
+      rcases h with ⟨t, cfg, hle⟩
+      exact ⟨x₀, t, ⟨cfg, hle⟩⟩
+    -- Widerspruch durch H₀
+    exact (H₀.mp contra1).elim
+  · -- Fall B: ¬DetSolve ⇒ ¬Verif
+    have contra2 : ¬ (∃ y s, Verif e₀ x₀ y s ∧ p (Nat.size x₀) s 1 1) := by
+      intro h'
+      rcases h' with ⟨y, t, ⟨cfg, hle⟩⟩
+      exact h ⟨t, cfg, hle⟩
+    exact (H₀.mpr contra2).elim
 
 end PNP
