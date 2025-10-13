@@ -1,8 +1,9 @@
-import PNP.TM.AcceptRun
+import Mathlib.Data.Nat.Basic
+import PNP.TM.Core
 
 namespace PNP
 
-/-- DetSolve(f, x, t): deterministische Entscheidung in ≤ t Schritten -/
+/-- DetSolve(f, x, t): f entscheidet x in ≤ t Schritten deterministisch -/
 def DetSolve (f x t : Nat) : Prop :=
   PNP.TM.AcceptRun f x [] t
 
