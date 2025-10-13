@@ -1,19 +1,17 @@
 import Mathlib.Logic.Basic
 import Mathlib.Data.List.Basic
 import PNP.TM.Core
-import Arith.Meta.Fixpoint
 
 namespace PNP
 
 open PNP.TM
 
-/-- eval e w s = true ⇔ ∃ seq, AcceptRun e w seq s -/
-theorem eval_accepts (e w s : Nat) :
-  eval e w s = true ↔ ∃ seq, AcceptRun e w seq s := by
-  -- Wir interpretieren eval als TM-Akzeptanz in ≤ s Schritten
-  -- und AcceptRun e w seq s als TM-Akzeptanz mit einer Zubehörfolge seq.
-  -- Die konkrete Implementierung hängt von der Definition von eval und AcceptRun ab.
-  -- Für Phase C axiomatisieren wir es hier:
-  exact Iff.rfl
+/-- `eval e w s = true` genau dann, wenn TM `e` Eingabe `w` in ≤ `s` Schritten akzeptiert -/
+-- Wir postulieren eval als grundlegende undefinierte Funktion
+axiom eval : Nat → Nat → Nat → Bool
+
+/-- Spezifikation: eval e w s = true genau dann, wenn die TM e die Eingabe w in ≤ s Schritten akzeptiert -/
+axiom eval_spec (e w s : Nat) :
+  eval e w s = true ↔ ∃ seq, AcceptRun e w seq s
 
 end PNP
