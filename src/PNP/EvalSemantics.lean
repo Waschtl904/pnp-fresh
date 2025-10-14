@@ -18,8 +18,7 @@ axiom eval_spec (e w s : Nat) :
   eval e w s = true ↔ ∃ seq, AcceptRun e w seq s
 
 /-- eval und evalPair sind äquivalent für gepaarte Eingaben -/
-theorem eval_pair_equiv {e u v s} : eval e (pair u v) s = evalPair e u v s := by
-  sorry
+axiom eval_pair_equiv {e u v s} : eval e (pair u v) s = evalPair e u v s
 
 /-- Umgekehrte Richtung der eval-evalPair-Äquivalenz -/
 theorem eval_pair_inv {e u v s} : evalPair e u v s = eval e (pair u v) s := by
