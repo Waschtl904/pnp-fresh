@@ -2,7 +2,8 @@ import Mathlib.Logic.Basic
 import Mathlib.Data.Nat.Basic
 import PNP.DeltaSigma
 import PNP.TM.Core
-import PNP.EvalSemantics  -- hierher gehört nun eval
+import PNP.EvalSemantics
+import Arith.Complexity.Verif
 
 namespace PNP
 
@@ -11,9 +12,7 @@ axiom smn : Nat → Nat → Nat
 axiom smn_spec {f a x s : Nat} :
   eval (smn f a) x s = eval f (pair a x) s
 
-/-- Additional property needed for Kleene recursion theorem:
-    When applying smn to the universal machine with parameter pair univ 0,
-    the result creates the fixed point property -/
+/-- Fixpunkt-Eigenschaft für smn mit universeller TM -/
 axiom smn_univ_fixed_point :
   pair (smn univ (pair univ 0)) 0 = pair univ 0
 
@@ -21,34 +20,41 @@ axiom smn_univ_fixed_point :
 axiom univ : Nat
 axiom univ_spec : ∀ {e x s : Nat}, eval univ (pair e x) s = eval e x s
 
+/-- Spezifikation für Fixpunkt-Lemma mit evalPair -/
+theorem Fix.evalPair_spec (e x : Nat) :
+  (∃ s, eval e x s = true) ↔ (∃ y s, Verif e (fst x) y s ∧ p (Nat.size (fst x)) s 1 1) := by
+  constructor
+  · intro ⟨s, hs⟩
+    -- x wird als pair (fst x) (snd x) interpretiert
+    have h_pair : eval e x s = evalPair e (fst x) (snd x) s := by
+      conv_lhs => rw [← pair_fst_snd x]
+      exact eval_pair_equiv
+    rw [h_pair] at hs
+    have ⟨h_verif, h_time⟩ := (Verif.evalPair_spec).mp hs
+    exact ⟨snd x, s, h_verif, h_time⟩
+  · intro ⟨y, s, ⟨h_verif, h_time⟩⟩
+    have hs : evalPair e (fst x) y s = true := h_verif
+    have h_pair : evalPair e (fst x) y s = eval e (pair (fst x) y) s := eval_pair_inv
+    rw [h_pair] at hs
+    exact ⟨s, hs⟩
 
-
-/-- Kleene’s Rekursionssatz (funktionierende Version) -/
+/-- Kleene's Rekursionssatz -/
 theorem kleene_recursion :
   ∃ e, ∀ x s, eval e x s = eval (pair e 0) x s := by
-  -- 1. Parameter und Maschine definieren
   let param := pair univ 0
   let e := smn univ param
   use e
   intro x s
-
-  -- 2–4. Kette in einem calc-Block
   calc
     eval e x s
         = eval univ (pair param x) s   := by
-      -- wird via smn_spec bewiesen, nach Auflösen von e
       dsimp [e]
       exact smn_spec (f := univ) (a := param) (x := x) (s := s)
     _   = eval param x s             := by
-      -- universelle TM-Eigenschaft
       exact univ_spec (e := param) (x := x) (s := s)
     _   = eval (pair univ 0) x s      := by
-      -- param = pair univ 0, so this is direct
       rfl
     _   = eval (pair e 0) x s        := by
-      -- From the axiom: pair (smn univ (pair univ 0)) 0 = pair univ 0
-      -- Since e = smn univ (pair univ 0), this means pair e 0 = pair univ 0
-      -- Therefore, eval (pair univ 0) x s = eval (pair e 0) x s
       rw [← smn_univ_fixed_point]
 
 /-- Fixpunkt-Lemma für beliebige Prädikate F. -/

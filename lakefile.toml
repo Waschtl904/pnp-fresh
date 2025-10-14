@@ -5,6 +5,8 @@ defaultTargets = ["pnpExe"]
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
+git  = "https://github.com/leanprover-community/mathlib4"
+rev  = "v4.23.0"            # oder der gelistete Tag/Hash                                     # Beispiel: Datumstags-Commit oder Tag
 
 [[lean_lib]]
 name = "pnpLib"
