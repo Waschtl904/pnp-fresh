@@ -1,4 +1,5 @@
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Pairing
 import PNP.DeltaSigma
 
 namespace PNP.TM
@@ -86,5 +87,30 @@ theorem step_preserves_semantics (e w : Nat) (seq : List Nat) (s : Nat) :
       exact { valid := True.intro, steps_le := Nat.le_refl 0 }
     · -- 0 ≤ s
       exact Nat.zero_le s
+
+-- Decode a natural number encoding into a TMDesc
+def decodeTM (encoded : Nat) : TMDesc :=
+  -- Unpack the encoding: pair (pair states alphabet) (pair num_transitions transition_product)
+  let outer := Nat.unpair encoded
+  let states_alphabet := Nat.unpair outer.1
+  let transitions_data := Nat.unpair outer.2
+
+  let states := states_alphabet.1
+  let alphabet := states_alphabet.2
+  let num_transitions := transitions_data.1
+  let transition_product := transitions_data.2
+
+  -- For now, reconstruct a simple machine that accepts everything
+  -- This is a placeholder - a full implementation would need to decode
+  -- all the individual transitions from the transition_product
+  -- Note: The current implementation does NOT properly invert encodeTM
+  {
+    states := states,
+    alphabet := alphabet,
+    transition := fun state symbol =>
+      -- Simple reconstruction: always go to state 0 (accepting) and stay there
+      -- In a full implementation, we would decode the actual transitions
+      (0, symbol, 0)  -- new_state=0, same symbol, direction=0 (stay)
+  }
 
 end PNP.TM
