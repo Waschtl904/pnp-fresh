@@ -2,18 +2,12 @@ name = "pnp"
 version = "0.1.0"
 defaultTargets = ["pnpExe"]
 
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-
 [[lean_lib]]
 name = "pnpLib"
 srcDir = "src"
 roots = ["PNP", "Arith"]
-# glibc = false  # Faster builds on Windows
 
 [[lean_exe]]
 name = "pnpExe"
 root = "PNP.Main"
 srcDir = "src"
-# glibc = false  # Faster builds on Windows

@@ -1,5 +1,3 @@
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Pairing
 import PNP.DeltaSigma
 
 namespace PNP.TM

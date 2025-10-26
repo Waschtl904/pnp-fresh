@@ -1,4 +1,3 @@
-import Mathlib.Data.Nat.Pairing
 import PNP.DeltaSigma
 import PNP.TM.Core
 

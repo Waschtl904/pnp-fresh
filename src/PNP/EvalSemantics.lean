@@ -1,8 +1,6 @@
-import Mathlib.Logic.Basic
-import Mathlib.Data.List.Basic
 import PNP.TM.Core
 import PNP.DeltaSigma
-import Mathlib.Logic.Function.Basic
+
 
 open Classical
 

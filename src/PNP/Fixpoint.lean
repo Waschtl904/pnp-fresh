@@ -1,5 +1,3 @@
-import Mathlib.Logic.Basic
-import Mathlib.Data.Nat.Basic
 import PNP.DeltaSigma   -- liefert Ihre pair, fst, snd
 import PNP.TM.Core
 import PNP.EvalSemantics

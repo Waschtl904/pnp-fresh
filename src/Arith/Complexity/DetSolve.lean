@@ -1,5 +1,3 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Log
 import PNP.DeltaSigma
 import PNP.EvalSemantics
 import PNP.TM.Core
